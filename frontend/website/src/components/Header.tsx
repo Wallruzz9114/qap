@@ -3,6 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { css, jsx } from '@emotion/react';
 import { ChangeEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { fontFamily, fontSize, gray1, gray2, gray5 } from '../utils/styles';
 import UserIcon from './UserIcon';
 
@@ -27,8 +28,8 @@ const Header = () => {
         box-shadow: 0 3px 7px 0 rgba(110, 112, 114, 0.21);
       `}
     >
-      <a
-        href="./"
+      <Link
+        to="/"
         css={css`
           font-size: 24px;
           font-weight: bold;
@@ -37,7 +38,7 @@ const Header = () => {
         `}
       >
         QAP
-      </a>
+      </Link>
       <input
         type="text"
         placeholder="Search..."
@@ -58,8 +59,8 @@ const Header = () => {
           }
         `}
       />
-      <a
-        href="./signin"
+      <Link
+        to="./signin"
         css={css`
           font-family: ${fontFamily};
           font-size: ${fontSize};
@@ -78,7 +79,7 @@ const Header = () => {
       >
         <UserIcon />
         <span>Sign In</span>
-      </a>
+      </Link>
     </div>
   );
 };

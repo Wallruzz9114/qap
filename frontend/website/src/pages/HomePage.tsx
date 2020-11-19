@@ -3,6 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { css, jsx } from '@emotion/react';
 import { useEffect, useState } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import Page from '../components/Page';
 import { PageTile } from '../components/PageTile';
 import { QuestionsList } from '../components/QuestionsList';
@@ -10,7 +11,7 @@ import { getUnansweredQuestions } from '../data/seed';
 import { IQuestion } from '../models/question';
 import { PrimaryButton } from '../utils/styles';
 
-const HomePage = () => {
+const HomePage: React.FC<RouteComponentProps> = ({ history }) => {
   const [questions, setQuestions] = useState<IQuestion[] | null>(null);
   const [questionsLoading, setQuestionsLoading] = useState(true);
 
@@ -24,8 +25,8 @@ const HomePage = () => {
     getAllUnansweredQuestions();
   }, []);
 
-  const submitQuestion = () => {
-    console.log('TODO - move to the AskPage');
+  const goToSubmitQuestion = () => {
+    history.push('/ask');
   };
 
   return (
@@ -38,7 +39,7 @@ const HomePage = () => {
         `}
       >
         <PageTile>Unanswered Questions</PageTile>
-        <PrimaryButton onClick={submitQuestion}>Ask a question</PrimaryButton>
+        <PrimaryButton onClick={goToSubmitQuestion}>Ask a question</PrimaryButton>
       </div>
       {questionsLoading ? (
         <div

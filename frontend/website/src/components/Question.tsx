@@ -2,6 +2,7 @@
 /** @jsx jsx */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { css, jsx } from '@emotion/react';
+import { Link } from 'react-router-dom';
 import { IQuestion } from '../models/question';
 import { gray2, gray3 } from '../utils/styles';
 
@@ -16,14 +17,15 @@ const Question: React.FC<IProps> = ({ question, showContent = true }) => (
       padding: 10px 0px;
     `}
   >
-    <div
+    <Link
       css={css`
-        padding: 10px 0px;
-        font-size: 19px;
+        text-decoration: none;
+        color: ${gray2};
       `}
+      to={`questions/${question.id}`}
     >
       {question.title}
-    </div>
+    </Link>
     {showContent && (
       <div
         css={css`

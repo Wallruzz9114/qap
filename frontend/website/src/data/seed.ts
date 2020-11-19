@@ -44,4 +44,20 @@ const getUnansweredQuestions = async (): Promise<IQuestion[]> => {
   return questions.filter((q) => q.answers.length === 0);
 };
 
-export { getUnansweredQuestions };
+const getQuestion = async (id: number): Promise<IQuestion | null> => {
+  await wait(500);
+  const filteredQuestions = questions.filter((q) => q.id === id);
+
+  return filteredQuestions.length > 0 ? filteredQuestions[0] : null;
+};
+
+const searchQuestions = async (criteria: string): Promise<IQuestion[]> => {
+  await wait(500);
+  return questions.filter(
+    (q) =>
+      q.title.toLowerCase().indexOf(criteria.toLowerCase()) > 0 ||
+      q.content.toLowerCase().indexOf(criteria.toLowerCase()) >= 0
+  );
+};
+
+export { getUnansweredQuestions, getQuestion, searchQuestions };
