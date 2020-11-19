@@ -2,14 +2,23 @@
 /** @jsx jsx */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { css, jsx } from '@emotion/react';
-import { ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { ChangeEvent, FormEvent, useState } from 'react';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { fontFamily, fontSize, gray1, gray2, gray5 } from '../utils/styles';
 import UserIcon from './UserIcon';
 
-const Header = () => {
+const Header: React.FC<RouteComponentProps> = ({ history, location }) => {
+  const searchParams = new URLSearchParams(location.search);
+  const criteria = searchParams.get('criteria') || '';
+  const [search, setSearch] = useState(criteria);
+
   const searchInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log(event.currentTarget.value);
+    setSearch(event.currentTarget.value);
+  };
+
+  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    history.push(`/search?criteria=${search}`);
   };
 
   return (
@@ -39,26 +48,29 @@ const Header = () => {
       >
         QAP
       </Link>
-      <input
-        type="text"
-        placeholder="Search..."
-        onChange={searchInputChange}
-        css={css`
-          box-sizing: border-box;
-          font-family: ${fontFamily};
-          font-size: ${fontSize};
-          padding: 8px 10px;
-          border: 1px solid ${gray5};
-          border-radius: 3px;
-          color: ${gray2};
-          background-color: white;
-          width: 200px;
-          height: 30px;
-          :focus {
-            outline-color: ${gray5};
-          }
-        `}
-      />
+      <form onSubmit={handleSearchSubmit}>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={search}
+          onChange={searchInputChange}
+          css={css`
+            box-sizing: border-box;
+            font-family: ${fontFamily};
+            font-size: ${fontSize};
+            padding: 8px 10px;
+            border: 1px solid ${gray5};
+            border-radius: 3px;
+            color: ${gray2};
+            background-color: white;
+            width: 200px;
+            height: 30px;
+            :focus {
+              outline-color: ${gray5};
+            }
+          `}
+        />
+      </form>
       <Link
         to="./signin"
         css={css`
@@ -84,4 +96,6 @@ const Header = () => {
   );
 };
 
-export default Header;
+const HeaderWithRouter = withRouter(Header);
+
+export { HeaderWithRouter };

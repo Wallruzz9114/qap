@@ -31,4 +31,4 @@ const AnswersList: React.FC<IProps> = ({ answers }) => (
   </ul>
 );
 
-export default AnswersList;
+export { AnswersList };

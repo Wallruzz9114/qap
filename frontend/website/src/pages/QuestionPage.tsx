@@ -4,9 +4,11 @@
 import { css, jsx } from '@emotion/react';
 import { Fragment, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import AnswersList from '../components/AnswersList';
-import Page from '../components/Page';
-import { getQuestion } from '../data/seed';
+import { AnswersList } from '../components/AnswersList';
+import { CustomForm, IValues, minLength, required } from '../components/CustomForm';
+import { InputField } from '../components/InputField';
+import { Page } from '../components/Page';
+import { answerPost, getQuestion } from '../data/seed';
 import { IQuestion } from '../models/question';
 import { gray3, gray6 } from '../utils/styles';
 
@@ -28,6 +30,16 @@ const QuestionPage: React.FC<RouteComponentProps<IProps>> = ({ match }) => {
       grabQuestion(questionId);
     }
   }, [match.params.id]);
+
+  const handleSubmit = async (values: IValues) => {
+    const result = await answerPost({
+      questionId: question!.id,
+      content: values.content,
+      op: 'Fred',
+      created: new Date(),
+    });
+    return { success: result ? true : false };
+  };
 
   return (
     <Page>
@@ -70,6 +82,23 @@ const QuestionPage: React.FC<RouteComponentProps<IProps>> = ({ match }) => {
                 question.op
               } on ${question.created.toLocaleDateString()} ${question.created.toLocaleTimeString()}`}
               <AnswersList answers={question.answers} />
+              <div
+                css={css`
+                  margin-top: 20px;
+                `}
+              >
+                <CustomForm
+                  caption="Submit Your Answer"
+                  validationRules={{
+                    content: [{ validator: required }, { validator: minLength, arg: 50 }],
+                  }}
+                  onSubmit={handleSubmit}
+                  failureMessage="There was a problem with your answer"
+                  successMessage="Your answer was successfully submitted"
+                >
+                  <InputField name="content" label="Your Answer" type="TextArea" />
+                </CustomForm>
+              </div>
             </div>
           </Fragment>
         )}

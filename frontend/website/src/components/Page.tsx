@@ -21,4 +21,4 @@ const Page: React.FC<IProps> = ({ title, children }) => (
   </div>
 );
 
-export default Page;
+export { Page };

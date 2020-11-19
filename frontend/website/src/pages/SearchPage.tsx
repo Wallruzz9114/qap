@@ -4,7 +4,7 @@
 import { css, jsx } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import Page from '../components/Page';
+import { Page } from '../components/Page';
 import { QuestionsList } from '../components/QuestionsList';
 import { searchQuestions } from '../data/seed';
 import { IQuestion } from '../models/question';

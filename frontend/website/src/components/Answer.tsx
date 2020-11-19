@@ -31,7 +31,7 @@ const Answer: React.FC<IProps> = ({ answer }) => (
       `}
     >
       {`Answered by ${
-        answer.poster
+        answer.op
       } on ${answer.created.toLocaleDateString()} ${answer.created.toLocaleTimeString()}`}
     </div>
   </div>
