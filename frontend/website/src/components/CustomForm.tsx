@@ -35,7 +35,8 @@ export interface SubmitResult {
 interface IProps {
   caption?: string;
   validationRules?: ValidationProp;
-  onSubmit: (values: IValues) => Promise<SubmitResult>;
+  onSubmit: (values: IValues) => Promise<SubmitResult> | void;
+  submitResult?: SubmitResult;
   successMessage?: string;
   failureMessage?: string;
 }
@@ -62,6 +63,7 @@ const CustomForm: React.FC<IProps> = ({
   children,
   validationRules,
   onSubmit,
+  submitResult,
   successMessage = 'Success!',
   failureMessage = 'Something went wrong',
 }) => {
@@ -120,6 +122,12 @@ const CustomForm: React.FC<IProps> = ({
       setSubmitError(false);
       // call the consumer submit function
       const result = await onSubmit(values);
+
+      // The result must be passed through as a prop
+      if (result === undefined) {
+        return;
+      }
+
       // set any errors in state
       setErrors(result.errors || {});
       setSubmitError(!result.success);
@@ -128,6 +136,10 @@ const CustomForm: React.FC<IProps> = ({
       setSubmitted(true);
     }
   };
+
+  const disabled = submitResult ? submitResult.success : submitting || (submitted && !submitError);
+  const showError = submitResult ? !submitResult.success : submitted && submitError;
+  const showSuccess = submitResult ? submitResult.success : submitted && !submitError;
 
   return (
     <FormContext.Provider
@@ -146,7 +158,7 @@ const CustomForm: React.FC<IProps> = ({
     >
       <form noValidate={true} onSubmit={submitForm}>
         <fieldset
-          disabled={submitting || (submitted && !submitError)}
+          disabled={disabled}
           css={css`
             margin: 10px auto 0 auto;
             padding: 30px;
@@ -169,7 +181,7 @@ const CustomForm: React.FC<IProps> = ({
           >
             <PrimaryButton type="submit">{caption}</PrimaryButton>
           </div>
-          {submitted && submitError && (
+          {showError && (
             <p
               css={css`
                 color: red;
@@ -178,7 +190,7 @@ const CustomForm: React.FC<IProps> = ({
               {failureMessage}
             </p>
           )}
-          {submitted && !submitError && (
+          {showSuccess && (
             <p
               css={css`
                 color: green;

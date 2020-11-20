@@ -1,20 +1,55 @@
-import React from 'react';
-import { CustomForm, IValues, minLength, required } from '../components/CustomForm';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { CustomForm, IValues, minLength, required, SubmitResult } from '../components/CustomForm';
 import { InputField } from '../components/InputField';
 import { Page } from '../components/Page';
-import { createPost } from '../data/seed';
+import { IPost } from '../models/post';
+import { IQuestion } from '../models/question';
+import { AppState, clearPostedQuestionActionCreator, postQuestionActionCreator } from '../store';
 
-const AskPage = () => {
-  const handleSubmit = async (values: IValues) => {
-    const question = await createPost({
+interface IProps {
+  createPost: (post: IPost) => Promise<void>;
+  createPostResult?: IQuestion;
+  clearPost: () => void;
+}
+
+const mapStateToProps = (store: AppState) => {
+  return {
+    createPostResult: store.questions.postedResult,
+  };
+};
+
+const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AnyAction>) => {
+  return {
+    createPost: (post: IPost) => dispatch(postQuestionActionCreator(post)),
+    clearPost: () => dispatch(clearPostedQuestionActionCreator()),
+  };
+};
+
+const AskPage: React.FC<IProps> = ({ createPost, createPostResult, clearPost }) => {
+  useEffect(() => {
+    return function cleanUp() {
+      clearPost();
+    };
+  }, [clearPost]);
+
+  const handleSubmit = (values: IValues) => {
+    createPost({
       title: values.title,
       content: values.content,
       op: 'Fred',
       created: new Date(),
     });
-
-    return { success: question ? true : false };
   };
+
+  let submitResult: SubmitResult | undefined;
+
+  if (createPostResult) {
+    submitResult = { success: createPostResult !== undefined };
+  }
+
   return (
     <Page title="Ask a Question">
       <CustomForm
@@ -24,6 +59,7 @@ const AskPage = () => {
           content: [{ validator: required }, { validator: minLength, arg: 50 }],
         }}
         onSubmit={handleSubmit}
+        submitResult={submitResult}
         failureMessage="There was a problem with your question"
         successMessage="Your question was successfully submitted"
       >
@@ -34,4 +70,4 @@ const AskPage = () => {
   );
 };
 
-export default AskPage;
+export default connect(mapStateToProps, mapDispatchToProps)(AskPage);

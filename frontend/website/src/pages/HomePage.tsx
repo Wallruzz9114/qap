@@ -2,28 +2,48 @@
 /** @jsx jsx */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { css, jsx } from '@emotion/react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 import { Page } from '../components/Page';
 import { PageTile } from '../components/PageTile';
 import { QuestionsList } from '../components/QuestionsList';
-import { getUnansweredQuestions } from '../data/seed';
 import { IQuestion } from '../models/question';
+import { AppState, getUnansweredQuestionsActionCreator } from '../store';
 import { PrimaryButton } from '../utils/styles';
 
-const HomePage: React.FC<RouteComponentProps> = ({ history }) => {
-  const [questions, setQuestions] = useState<IQuestion[] | null>(null);
-  const [questionsLoading, setQuestionsLoading] = useState(true);
+interface IProps extends RouteComponentProps {
+  getUnansweredQuestions: () => Promise<void>;
+  questions: IQuestion[] | null;
+  questionsLoading: boolean;
+}
 
+const mapStateToProps = (store: AppState) => {
+  return {
+    questions: store.questions.unanswered,
+    questionsLoading: store.questions.loading,
+  };
+};
+
+const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AnyAction>) => {
+  return {
+    getUnansweredQuestions: () => dispatch(getUnansweredQuestionsActionCreator()),
+  };
+};
+
+const HomePage: React.FC<IProps> = ({
+  history,
+  questions,
+  questionsLoading,
+  getUnansweredQuestions,
+}) => {
   useEffect(() => {
-    const getAllUnansweredQuestions = async () => {
-      const unansweredQuestions = await getUnansweredQuestions();
-      setQuestions(unansweredQuestions);
-      setQuestionsLoading(false);
-    };
-
-    getAllUnansweredQuestions();
-  }, []);
+    if (questions === null) {
+      getUnansweredQuestions();
+    }
+  }, [questions, getUnansweredQuestions]);
 
   const goToSubmitQuestion = () => {
     history.push('/ask');
@@ -57,4 +77,4 @@ const HomePage: React.FC<RouteComponentProps> = ({ history }) => {
   );
 };
 
-export default HomePage;
+export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
